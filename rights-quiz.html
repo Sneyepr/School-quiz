@@ -1,0 +1,1132 @@
+<title>Rights and Amendments Quiz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<style>
+/* Layout: one centered study column. Home (setup + study sheet) -> Quiz card -> Results. Ballot-sticker gold marks wins. */
+:root{
+  --bg:#EDF1F8; --surface:#FFFFFF; --ink:#15213D; --ink-soft:#4B5878; --line:#D2DAE8;
+  --primary:#2346C8; --primary-ink:#FFFFFF;
+  --gold:#F2B42A; --gold-ink:#3A2A00;
+  --good:#167A4B; --good-bg:#E2F3E9; --bad:#B33A26; --bad-bg:#FBE8E3; --try:#8F5600; --try-bg:#FFF1D4;
+  --t-dp:#6447CF; --t-ap:#0E8484; --t-vr:#B86E00;
+  --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  --body:'Atkinson Hyperlegible',Verdana,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1424; --surface:#172039; --ink:#E8EDF8; --ink-soft:#A6B2CB; --line:#2B3655;
+  --primary:#7D98FF; --primary-ink:#0E1424; --gold:#F2B42A; --gold-ink:#2A1E00;
+  --good:#5ED39A; --good-bg:#10301F; --bad:#FF8B74; --bad-bg:#3A1A14; --try:#FFC768; --try-bg:#33270F;
+  --t-dp:#AC97FF; --t-ap:#51D2D0; --t-vr:#F5BA4B; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E1424; --surface:#172039; --ink:#E8EDF8; --ink-soft:#A6B2CB; --line:#2B3655;
+  --primary:#7D98FF; --primary-ink:#0E1424; --gold:#F2B42A; --gold-ink:#2A1E00;
+  --good:#5ED39A; --good-bg:#10301F; --bad:#FF8B74; --bad-bg:#3A1A14; --try:#FFC768; --try-bg:#33270F;
+  --t-dp:#AC97FF; --t-ap:#51D2D0; --t-vr:#F5BA4B; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 56px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.7rem,5vw,2.3rem)}
+h2{font-size:1.35rem}
+h3{font-size:1.1rem}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+
+.brand{display:flex;gap:14px;align-items:center}
+.sticker{flex:none;width:52px;height:52px;border-radius:50%;background:var(--gold);color:var(--gold-ink);display:grid;place-items:center;box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--gold-ink) 18%,transparent)}
+.sub{color:var(--ink-soft)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.label{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+.field{display:flex;flex-direction:column;gap:8px}
+input[type=text]{font:inherit;padding:10px 12px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);max-width:320px;width:100%}
+
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{display:flex;align-items:center;gap:10px;padding:10px 14px;border:2px solid var(--line);border-radius:999px;cursor:pointer;user-select:none;background:var(--surface)}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip .dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--c);flex:none}
+.chip .n{color:var(--ink-soft);font-size:.85rem;font-variant-numeric:tabular-nums}
+.chip:has(input:checked){border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--surface))}
+.chip:has(input:checked) .dot{background:var(--c)}
+.chip:has(input:focus-visible){outline:3px solid var(--primary);outline-offset:2px}
+[data-t=dp]{--c:var(--t-dp)} [data-t=ap]{--c:var(--t-ap)} [data-t=vr]{--c:var(--t-vr)}
+
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{padding:8px 16px;border:2px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;font-variant-numeric:tabular-nums}
+.seg button[aria-pressed=true]{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,var(--surface));font-weight:700}
+
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{padding:14px 22px;border-radius:12px;border:2px solid transparent;cursor:pointer;font-family:var(--display);font-weight:600;font-size:1.1rem}
+.btn.primary{background:var(--primary);color:var(--primary-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--primary)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.linkbtn{background:none;border:none;padding:4px 0;color:var(--ink-soft);text-decoration:underline;cursor:pointer;font-size:.95rem}
+
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.rule{display:flex;gap:10px;align-items:flex-start;font-size:.95rem}
+.rule b{font-family:var(--display);font-weight:600;font-size:1.05rem;display:block}
+.pip{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.pip.g{background:var(--good-bg);color:var(--good)} .pip.t{background:var(--try-bg);color:var(--try)} .pip.m{background:var(--bad-bg);color:var(--bad)}
+
+details.study{border-top:1px solid var(--line);padding-top:12px}
+details.study:first-of-type{border-top:none;padding-top:0}
+details.study summary{cursor:pointer;font-family:var(--display);font-weight:600;font-size:1.1rem;display:flex;align-items:center;gap:10px;list-style:none}
+details.study summary::-webkit-details-marker{display:none}
+details.study summary::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+details.study summary::after{content:"+";margin-left:auto;color:var(--ink-soft);font-size:1.3rem}
+details.study[open] summary::after{content:"\2212"}
+.study ul{margin:10px 0 4px;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-width:62ch}
+.steps{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin-top:10px}
+.step{flex:1 1 200px;border:2px solid var(--line);border-radius:12px;padding:12px}
+.step .frac{font-family:var(--display);font-size:1.6rem;font-weight:700;color:var(--t-ap);line-height:1}
+.tablewrap{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:700}
+
+/* Quiz */
+.qtop{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{padding:6px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:.9rem;font-variant-numeric:tabular-nums}
+.stat b{font-family:var(--display);font-weight:600}
+.bar{height:10px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--gold);border-radius:999px;transition:width .3s}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tag{font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px;border:2px solid var(--c);color:var(--c)}
+.src{font-size:.82rem;color:var(--ink-soft)}
+.src.x{color:var(--try);font-weight:700}
+.again{font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--gold);color:var(--gold-ink)}
+.stem{font-family:var(--display);font-weight:500;font-size:clamp(1.3rem,3.6vw,1.6rem);line-height:1.3;text-wrap:pretty}
+.story{background:color-mix(in srgb,var(--t-vr) 10%,var(--surface));border:2px dashed color-mix(in srgb,var(--t-vr) 55%,var(--line));border-radius:12px;padding:14px 16px;font-size:1.05rem}
+.story .label{color:var(--t-vr);display:block;margin-bottom:4px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-height:58px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--primary)}
+.opt .letter{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--bg);font-family:var(--display);font-weight:600;border:2px solid var(--line)}
+.opt .otext{flex:1;min-width:0}
+.opt .mark{flex:none;width:24px;height:24px}
+.opt:disabled{cursor:default}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt.wrong .letter{border-color:var(--bad);color:var(--bad)}
+.opt.right{border-color:var(--good);background:var(--good-bg)}
+.opt.right .letter{border-color:var(--good);background:var(--good);color:var(--surface)}
+.opt.dim{opacity:.55}
+.tools{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.speak{display:inline-flex;align-items:center;gap:6px;background:none;border:2px solid var(--line);border-radius:10px;padding:6px 12px;cursor:pointer;font-size:.9rem}
+.speak:hover{border-color:var(--primary)}
+
+.fb{border-radius:14px;padding:16px;border:2px solid;display:flex;flex-direction:column;gap:10px}
+.fb.good{border-color:var(--good);background:var(--good-bg)}
+.fb.try{border-color:var(--try);background:var(--try-bg)}
+.fb.miss{border-color:var(--bad);background:var(--bad-bg)}
+.fbhead{display:flex;gap:10px;align-items:center}
+.fbhead h3{font-size:1.3rem}
+.fb.good .fbhead h3{color:var(--good)} .fb.try .fbhead h3{color:var(--try)} .fb.miss .fbhead h3{color:var(--bad)}
+.fbicon{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--surface)}
+.fb.good .fbicon{background:var(--good)} .fb.try .fbicon{background:var(--try)} .fb.miss .fbicon{background:var(--bad)}
+.fb .k{font-weight:700}
+.whylist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.whylist li{background:var(--surface);border-radius:10px;padding:10px 12px;border:1px solid var(--line)}
+.whylist .ans{font-weight:700;display:block}
+.yours{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--bad);margin-left:6px}
+.fb details summary{cursor:pointer;font-weight:700;color:var(--ink-soft)}
+.fb details[open] summary{margin-bottom:8px}
+
+/* Results */
+.big{font-family:var(--display);font-weight:700;font-size:clamp(2.4rem,9vw,3.4rem);line-height:1;font-variant-numeric:tabular-nums}
+.counts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.count{border-radius:12px;padding:12px;text-align:center}
+.count b{display:block;font-family:var(--display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+.count.g{background:var(--good-bg);color:var(--good)} .count.t{background:var(--try-bg);color:var(--try)} .count.m{background:var(--bad-bg);color:var(--bad)}
+.count span{font-size:.85rem}
+.trow{display:grid;grid-template-columns:minmax(0,10rem) 1fr auto;gap:12px;align-items:center;font-size:.95rem}
+.trow .bar span{background:var(--c)}
+.trow .pct{font-variant-numeric:tabular-nums;font-weight:700}
+.missed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.missed li{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.missed .a{color:var(--good);font-weight:700}
+
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50;width:100%;height:100%}
+@media (max-width:480px){.counts{grid-template-columns:1fr 1fr 1fr}.count b{font-size:1.3rem}.trow{grid-template-columns:1fr auto}.trow .bar{grid-column:1/-1;order:3}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <section id="home" class="wrap-inner" style="display:flex;flex-direction:column;gap:20px">
+    <div class="brand">
+      <div class="sticker" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+      </div>
+      <div>
+        <h1>Rights and Amendments Quiz</h1>
+        <p class="sub">Study for your civics test: due process, the amendment process, and voting rights.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="field">
+        <label class="label" for="nameInput">Your first name (optional)</label>
+        <input type="text" id="nameInput" autocomplete="off" placeholder="Type your name">
+      </div>
+
+      <div class="field">
+        <span class="label" id="topicLbl">Pick your topics</span>
+        <div class="chips" role="group" aria-labelledby="topicLbl">
+          <label class="chip" data-t="dp"><input type="checkbox" id="t-dp" value="dp" checked><span class="dot"></span>Due Process <span class="n" id="n-dp"></span></label>
+          <label class="chip" data-t="ap"><input type="checkbox" id="t-ap" value="ap" checked><span class="dot"></span>Amendment Process <span class="n" id="n-ap"></span></label>
+          <label class="chip" data-t="vr"><input type="checkbox" id="t-vr" value="vr" checked><span class="dot"></span>Voting Rights <span class="n" id="n-vr"></span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="label" id="sizeLbl">How many questions?</span>
+        <div class="seg" role="group" aria-labelledby="sizeLbl" id="sizeSeg">
+          <button type="button" data-n="10" aria-pressed="false">10</button>
+          <button type="button" data-n="20" aria-pressed="true">20</button>
+          <button type="button" data-n="40" aria-pressed="false">40</button>
+          <button type="button" data-n="all" aria-pressed="false">All</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="startBtn">Start quiz</button>
+        <button type="button" class="btn ghost" id="missedBtn" hidden>Practice my missed questions</button>
+      </div>
+      <p class="sub" id="topicWarn" hidden>Pick at least one topic.</p>
+    </div>
+
+    <div class="panel">
+      <h2>How it works</h2>
+      <div class="rules">
+        <div class="rule"><span class="pip g">1</span><div><b>Right on try 1</b>You earn 1 point and see why it's right.</div></div>
+        <div class="rule"><span class="pip t">2</span><div><b>Right on try 2</b>You get a hint after a miss. A second-try answer earns half a point.</div></div>
+        <div class="rule"><span class="pip m">!</span><div><b>Missed twice</b>You see the right answer, why the others are wrong, and it comes back at the end of the round.</div></div>
+      </div>
+      <p class="sub">Tip: press 1 to 5 to pick an answer, and Enter for the next question.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Study sheet</h2>
+      <details class="study" data-t="dp">
+        <summary>Due Process</summary>
+        <ul>
+          <li>Due process comes from the <b>Bill of Rights</b>. It protects people <b>accused</b> of breaking a law and people <b>in jail</b> for breaking laws.</li>
+          <li><b>Accused</b> means blamed or charged with doing something wrong.</li>
+          <li>Rights of people <b>accused</b>: be considered innocent until proven guilty; be told what law they are accused of breaking; be present at their trial; defend themselves at a fair trial.</li>
+          <li>Rights of people <b>found guilty</b>: the consequence must be similar to what others got for the same law, and it must be fair and reasonable.</li>
+          <li>The punishment must fit the crime. A fine for riding a bike on the sidewalk is reasonable. Six months in jail for it is not.</li>
+        </ul>
+      </details>
+      <details class="study" data-t="ap">
+        <summary>Amendment Process</summary>
+        <ul>
+          <li>The <b>framers</b> (creators) wrote the Constitution in <b>1787</b>. It is a <b>living document</b>, which means it can be changed.</li>
+          <li><b>Amend</b> means change. <b>Ratify</b> means approve.</li>
+          <li>It is hard on purpose, so one person or one group can't change it. The process makes citizens part of it.</li>
+          <li>There have been <b>27 amendments</b> in nearly <b>240 years</b>.</li>
+        </ul>
+        <div class="steps">
+          <div class="step"><div class="label">Step 1: Propose</div><div class="frac">2/3</div>of BOTH houses of Congress</div>
+          <div class="step"><div class="label">Step 2: Ratify</div><div class="frac">3/4</div>of state legislatures (38 of 50)</div>
+        </div>
+      </details>
+      <details class="study" data-t="vr">
+        <summary>Voting Rights Amendments</summary>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Amendment</th><th>Year</th><th>What it changed</th></tr></thead>
+            <tbody>
+              <tr><td class="num">15th</td><td class="num">1870</td><td>African American men, including formerly enslaved men, can vote. Passed after the Civil War. Some states then used poll taxes and literacy tests to block them.</td></tr>
+              <tr><td class="num">19th</td><td class="num">1920</td><td>All women can vote, thanks to the Suffrage Movement. Women waited 144 years.</td></tr>
+              <tr><td class="num">23rd</td><td class="num">1961</td><td>Washington, D.C. gets electors in the Electoral College, so its people have a voice in choosing the president.</td></tr>
+              <tr><td class="num">24th</td><td class="num">1964</td><td>Ended poll taxes (fees to vote).</td></tr>
+              <tr><td class="num">26th</td><td class="num">1971</td><td>Voting age lowered from 21 to 18, because 18-year-olds could be drafted.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section id="quiz" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="qtop">
+      <span class="stat" id="qCount">Question 1 of 20</span>
+      <div class="stats">
+        <span class="stat">Points <b id="sPts">0</b></span>
+        <span class="stat">Streak <b id="sStreak">0</b></span>
+      </div>
+    </div>
+    <div class="bar" aria-hidden="true"><span id="progBar" style="width:0%"></span></div>
+
+    <div class="panel">
+      <div class="qhead">
+        <span class="tag" id="qTag" data-t="dp">Due Process</span>
+        <span class="again" id="qAgain" hidden>Second chance</span>
+        <span class="src" id="qSrc"></span>
+      </div>
+      <div class="story" id="qStory" hidden><span class="label">Story card</span><span id="qStoryText"></span></div>
+      <p class="stem" id="qStem"></p>
+      <div class="opts" id="qOpts"></div>
+      <div id="fb" aria-live="polite"></div>
+      <div class="tools">
+        <button type="button" class="speak" id="speakBtn" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          Read it to me
+        </button>
+        <button type="button" class="btn primary" id="nextBtn" hidden>Next question</button>
+      </div>
+    </div>
+    <button type="button" class="linkbtn" id="quitBtn">End this round and see my score</button>
+  </section>
+
+  <section id="end" hidden style="display:flex;flex-direction:column;gap:20px">
+    <div class="panel">
+      <h2 id="endHead">Round complete!</h2>
+      <div class="big" id="endScore">0 / 0</div>
+      <p class="sub" id="endSub"></p>
+      <div class="counts">
+        <div class="count g"><b id="cFirst">0</b><span>Right on try 1</span></div>
+        <div class="count t"><b id="cSecond">0</b><span>Right on try 2</span></div>
+        <div class="count m"><b id="cMiss">0</b><span>Missed</span></div>
+      </div>
+      <div id="topicRows" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div class="actions">
+        <button type="button" class="btn primary" id="againBtn">New round</button>
+        <button type="button" class="btn ghost" id="redoBtn" hidden>Practice the ones I missed</button>
+        <button type="button" class="btn ghost" id="homeBtn">Home</button>
+      </div>
+    </div>
+    <div class="panel" id="missedPanel" hidden>
+      <h2>Review these</h2>
+      <ul class="missed" id="missedList"></ul>
+    </div>
+  </section>
+</div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+"use strict";
+/* ---------- Question bank ---------- */
+const TOPIC = {dp:"Due Process", ap:"Amendment Process", vr:"Voting Rights"};
+const SRC = {
+  dp:"From: Due Process reading", org:"From: Due Process organizer, p. 55",
+  ap:"From: Amendment Process, p. 56", vr:"From: Voting Rights Amendments, p. 58",
+  vo:"From: Voting Rights organizer, p. 59", cards:"From: Game cards, p. 61",
+  x:"Extra fact (not in your workbook)"
+};
+const BANK = [];
+const counters = {};
+// First option is always the correct one. Options are shuffled when shown.
+function Q(t, q, opts, hint, src, story, id){
+  counters[t] = (counters[t]||0) + 1;
+  BANK.push({id: id || (t + counters[t]), t, q, hint, src: src || t, story: story || "",
+    opts: opts.map((o,i)=>({x:o[0], why:o[1], ok:i===0}))});
+}
+
+/* ===== DUE PROCESS ===== */
+Q("dp","What is due process?",[
+ ["A process that protects the rights of people accused of breaking a law","Right. The Bill of Rights set up due process to protect people who are accused of breaking a law. It makes sure they are treated fairly."],
+ ["The steps for changing the Constitution","That is the amendment process. It is a different topic in your workbook."],
+ ["A fee some people had to pay to vote","That is a poll tax. The 24th Amendment got rid of it."],
+ ["A rule about who can be president","Due process is not about who can be president. It is about fair treatment for people accused of breaking a law."]],
+ "Think about the picture of the police officer and the person being arrested. Who does due process help?");
+Q("dp","Due process protects which people?",[
+ ["People accused of breaking laws and people in jail for breaking laws","Correct. The workbook says due process protects those who are accused and those who are in jail."],
+ ["Only police officers","Police officers must follow due process. It is there to protect the person who is accused."],
+ ["Only judges","Judges run trials, but due process is there to protect the person accused."],
+ ["Only people who never broke a law","Due process protects people who are accused and even people who are already in jail."]],
+ "The workbook names two groups: people who are accused, and people who are in ___.");
+Q("dp","Where do due process rights come from?",[
+ ["The Bill of Rights","Yes. The workbook says the Bill of Rights has a process to protect people accused of breaking a law."],
+ ["The Declaration of Independence","The Declaration of Independence told Britain the colonies were free. It does not list due process rights."],
+ ["A school handbook","A school handbook has school rules. Due process comes from the Bill of Rights, which is part of the Constitution."],
+ ["The voting game cards","The game cards are about voting amendments, not due process."]],
+ "It is a list of rights. Its name has the word 'Rights' in it.");
+Q("dp","What does 'innocent until proven guilty' mean?",[
+ ["A person is treated as not guilty until there is proof they broke the law","Great. The accused person does not have to prove they are innocent. The proof has to show they are guilty."],
+ ["A person is guilty until they prove they are innocent","This is backwards. In the United States, a person starts out innocent."],
+ ["The police decide if a person is guilty","Police can arrest someone, but guilt is decided at a fair trial with proof."],
+ ["Anyone who is accused goes straight to jail","Being accused is not the same as being guilty. The person gets a fair trial first."]],
+ "Which word comes first in the phrase: innocent or guilty?");
+Q("dp","Which of these is a right of a person accused of breaking a law?",[
+ ["To be told what law they are accused of breaking","Correct. This is one of the four rights listed in your workbook."],
+ ["To pick their own punishment","The accused does not pick the punishment. A punishment must be fair and reasonable, but someone else decides it."],
+ ["To skip the trial","The accused has a right to a fair trial, not a right to skip it."],
+ ["To choose who the judge is","This is not one of the rights in your workbook."]],
+ "Look at the four bullet points on the Due Process page.");
+Q("dp","A person accused of breaking a law has the right to be ___ at their trial.",[
+ ["present","Yes. The accused has the right to be there at their own trial."],
+ ["absent","Absent means not there. The workbook says the accused has the right to be there."],
+ ["the judge","The accused is not the judge. A fair trial has a judge who is not the person accused."],
+ ["late","Being late is not a right. The right is to be at the trial."]],
+ "It means 'here.' Teachers use this word when they take attendance.","org");
+Q("dp","At a fair trial, what does the accused person get to do?",[
+ ["Defend themselves","Correct. The accused gets to tell their side and defend themselves at a fair trial."],
+ ["Decide if they are guilty","The accused does not decide if they are guilty. That decision is based on proof."],
+ ["Write a new law","Trials do not write new laws. Lawmakers do that."],
+ ["Pick punishments for other people","No. The trial is about the accused person's own case."]],
+ "Your workbook has this one circled: 'be able to ___ themselves at a fair trial.'");
+Q("dp","Sam is arrested. No one tells him what law he is accused of breaking. Which right is being ignored?",[
+ ["The right to be told what law he is accused of breaking","Correct. Sam has a right to know what law he is accused of breaking."],
+ ["The right to be present at his trial","Sam's story does not say anything about missing his trial."],
+ ["The rule that consequences must be similar for everyone","That rule is for people already found guilty. Sam has not had a trial yet."],
+ ["The right to vote","Voting is a different topic. This story is about Sam being arrested."]],
+ "What does Sam NOT know?");
+Q("dp","Maya's trial takes place, but she is not allowed in the courtroom. Which right is being ignored?",[
+ ["The right to be present at her trial","Correct. Maya has the right to be there at her own trial."],
+ ["The right to be told what law she is accused of breaking","The story doesn't say Maya wasn't told. The problem is she can't be in the room."],
+ ["The rule that consequences must be fair and reasonable","That rule is about punishments after someone is found guilty. Maya's problem happens during the trial."],
+ ["The 26th Amendment","The 26th Amendment is about the voting age. It is not about trials."]],
+ "Where is Maya NOT allowed to be?");
+Q("dp","A judge says, 'I don't need any proof. You are guilty.' Which right is being ignored?",[
+ ["The right to be considered innocent until proven guilty","Correct. Guilt must be proven. Without proof, the person is still innocent."],
+ ["The right to be present at the trial","The story doesn't say the person was kept out of the trial."],
+ ["The rule that consequences must be similar for everyone","The problem here is that there is no proof, not the size of the punishment."],
+ ["The right to be told what law they broke","The judge's words are about proof, not about which law."]],
+ "What does the judge say he doesn't need?");
+Q("dp","At Leo's trial, he is not allowed to tell his side of the story. Which right is being ignored?",[
+ ["The right to defend himself at a fair trial","Correct. Telling your side of the story is how you defend yourself."],
+ ["The right to be present at his trial","Leo is at his trial. He just isn't allowed to speak."],
+ ["The rule that the consequence must be reasonable","Leo hasn't been given a consequence yet. The problem is during the trial."],
+ ["The right to be told what law he broke","The story doesn't say Leo wasn't told the law."]],
+ "When you tell your side of the story, what are you doing for yourself?");
+Q("dp","Which rule protects people who are found guilty of breaking a law?",[
+ ["The consequence must be fair and reasonable","Correct. This is on the 'found guilty' side of the organizer."],
+ ["Be present at their trial","That right is for people who are accused. The trial happens before someone is found guilty."],
+ ["Be told what law they are accused of breaking","That right is for people who are accused, not people already found guilty."],
+ ["They never get a consequence","People found guilty do get a consequence. Due process makes sure it is fair."]],
+ "Look at the right side of the organizer on page 55.","org");
+Q("dp","For someone found guilty, the consequence must be similar to what?",[
+ ["Consequences given to other people who broke the same law","Correct. People who break the same law should get similar consequences."],
+ ["Whatever the guilty person wants","The guilty person does not get to choose. The consequence has to be fair."],
+ ["The worst punishment possible","Due process says the consequence must be fair and reasonable, not the worst possible."],
+ ["Consequences for a different, bigger crime","A bigger crime can have a bigger consequence. It should match the same law."]],
+ "Think about other people who broke the SAME law.");
+Q("dp","Paying a fine for riding a bike on the sidewalk is:",[
+ ["Reasonable","Right. Your workbook uses this exact example. A fine fits a small rule like this."],
+ ["Not reasonable","The workbook says a fine for this is reasonable. Jail time would be the unreasonable part."],
+ ["Against the Bill of Rights","A fair fine follows due process. It is not against the Bill of Rights."]],
+ "A fine is a small consequence. Is riding on the sidewalk a big crime or a small one?");
+Q("dp","Spending six months in jail for riding a bike on the sidewalk is:",[
+ ["Not reasonable, because the punishment does not fit the crime","Correct. Six months in jail is far too big for such a small rule."],
+ ["Reasonable, because a law was broken","Breaking a law does mean there is a consequence, but it must fit. Six months is too much."],
+ ["Fair, because jail teaches a lesson","A consequence must be fair and reasonable. This one is much too harsh."],
+ ["The same as paying a small fine","Six months in jail is much bigger than a fine."]],
+ "Does the punishment match how small the crime is?");
+Q("dp","What does 'the punishment must fit the crime' mean?",[
+ ["The punishment should match how serious the wrong thing was","Correct. Small wrongs get small consequences. Serious wrongs can get bigger ones."],
+ ["Every crime gets the same punishment","Bigger crimes can get bigger consequences, and small ones get small ones."],
+ ["The punishment should be as hard as possible","Due process says punishments must be fair and reasonable."],
+ ["Only crimes in the Constitution can be punished","That is not what this phrase means. 'Fit' means match."]],
+ "Here, 'fit' means 'match.'");
+Q("dp","Two people both drop litter in a park. One pays a $50 fine. The other gets one year in jail. Which rule is being broken?",[
+ ["The consequence must be similar to others who broke the same law","Correct. They broke the same law, so their consequences should be similar."],
+ ["Innocent until proven guilty","Both people were already found guilty. The problem is the punishments are very different."],
+ ["Be present at their trial","The story doesn't say anyone missed their trial."],
+ ["No rule is broken. Judges can do whatever they want.","Due process means judges must be fair. They can't do whatever they want."]],
+ "Both people broke the SAME law. Are their consequences alike?");
+Q("dp","What does the word 'accused' mean?",[
+ ["Blamed or charged with doing something wrong","Yes! This matches the note written in your workbook: blamed or charged."],
+ ["Proven guilty","Being accused does not mean guilty. It only means someone says you did it."],
+ ["Set free","Being set free happens if a person is found not guilty."],
+ ["Chosen to vote","Accused has nothing to do with voting."]],
+ "Look at the note at the bottom of the Due Process page.");
+Q("dp","Which of these is NOT one of the rights of an accused person in your workbook?",[
+ ["To choose their own punishment","Correct. Accused people do not get to choose their own punishment. The other three are all real rights."],
+ ["To be considered innocent until proven guilty","This IS a right in your workbook, so it is not the answer."],
+ ["To be present at their trial","This IS a right in your workbook, so it is not the answer."],
+ ["To defend themselves at a fair trial","This IS a right in your workbook, so it is not the answer."]],
+ "Three of these are on the list. Find the one that is not.");
+Q("dp","Why is due process an important part of our democratic government?",[
+ ["It makes sure everyone is treated fairly when accused of a crime","Correct. That is how the workbook sums up due process."],
+ ["It lets the government arrest anyone without a reason","That is the opposite. Due process protects people from unfair treatment."],
+ ["It decides who can vote","Who can vote is decided by the voting rights amendments."],
+ ["It makes the Constitution easier to change","Changing the Constitution is the amendment process, and it is hard on purpose."]],
+ "Read the last paragraph of the Due Process page.");
+Q("dp","Which group does this right belong to? 'The consequence must be fair and reasonable.'",[
+ ["People found guilty of breaking a law","Correct. A consequence only comes after someone is found guilty."],
+ ["People accused of breaking a law","Accused people have not been found guilty yet, so they don't have a consequence yet."],
+ ["People voting for president","This rule is about consequences, not voting."],
+ ["Members of Congress","This rule protects people found guilty, not Congress."]],
+ "When does a person get a consequence: before or after being found guilty?","org");
+Q("dp","Which group does this right belong to? 'Be present at his or her trial.'",[
+ ["People accused of breaking a law","Correct. The trial happens while a person is accused, before anyone decides if they are guilty."],
+ ["People found guilty of breaking a law","The trial comes before someone is found guilty. So this right is for the accused."],
+ ["State legislatures","State legislatures are lawmakers. This right protects a person on trial."],
+ ["Voters in Washington, D.C.","That is about the 23rd Amendment, not trials."]],
+ "Does the trial happen before or after someone is found guilty?","org");
+Q("dp","Why does the United States have laws that all citizens must follow?",[
+ ["To keep everyone safe","Correct. The workbook says laws help keep everyone safe."],
+ ["To make money for the government","The workbook says the reason is safety."],
+ ["So the police have something to do","Laws exist to protect people, not to give police work."],
+ ["So only some people have to follow rules","The workbook says ALL citizens must follow the laws."]],
+ "Read the first paragraph of the Due Process page.");
+Q("dp","Your teacher thinks you took a classmate's pencil. Before deciding, she asks for your side of the story and checks the facts. How is this like due process?",[
+ ["You were treated fairly and got to defend yourself before a decision","Correct. Listening first and checking facts is what due process is about."],
+ ["You were punished right away","In the story, nothing happened right away. The teacher listened first."],
+ ["The teacher changed the Constitution","Teachers can't change the Constitution. That takes Congress and the states."],
+ ["You had to pay a poll tax","Poll taxes were fees to vote. They have nothing to do with this story."]],
+ "What did the teacher do BEFORE deciding?");
+Q("dp","Does due process still protect a person after they are in jail?",[
+ ["Yes. It protects people who are accused and people who are in jail.","Correct. The workbook says due process protects those in jail for breaking laws too."],
+ ["No, it stops once someone is in jail","The workbook says due process also protects people who are in jail."],
+ ["Only if they pay a fee","Due process rights are not something you pay for."],
+ ["Only if a judge says so","Due process rights belong to everyone. A judge can't take them away."]],
+ "The workbook says due process protects two groups. One of them is people in jail.");
+Q("dp","Which two amendments to the Constitution use the words 'due process of law'?",[
+ ["The 5th and 14th Amendments","Correct. The 5th Amendment is in the Bill of Rights. The 14th Amendment, from 1868, makes the states follow due process too."],
+ ["The 19th and 26th Amendments","Those are voting amendments. The 19th is for women, and the 26th lowered the voting age."],
+ ["The 15th and 24th Amendments","Those are voting amendments too. The 15th is for African American men, and the 24th ended poll taxes."],
+ ["The 1st and 2nd Amendments","The 1st is about speech and religion. The 2nd is about owning weapons."]],
+ "One is in the Bill of Rights (amendments 1 to 10). The other came soon after the Civil War.","x");
+Q("dp","What does 'proven guilty' mean?",[
+ ["There is proof that the person broke the law","Correct. Proof, also called evidence, must show the person did it."],
+ ["Someone said the person did it","That is only being accused. Proof is needed to be proven guilty."],
+ ["The person was arrested","Being arrested is not proof."],
+ ["The person looks guilty","How someone looks is not proof."]],
+ "The word 'proven' comes from the word 'proof.'");
+Q("dp","Jordan gets a $1,000 fine for a parking ticket. Everyone else pays $25 for the same ticket. What is wrong?",[
+ ["The consequence is not similar to what others got, and it is not reasonable","Correct. Same law, very different punishment. That breaks both 'found guilty' rules."],
+ ["Nothing. Jordan broke the law.","Jordan broke the law, but the consequence still has to be fair and similar to others."],
+ ["Jordan was not told what law he broke","The story says it was a parking ticket, so Jordan knows the law."],
+ ["Jordan was not allowed at his trial","The story doesn't say that."]],
+ "Compare Jordan's fine to everyone else's.");
+Q("dp","Due process works to make sure everyone is treated ___ when accused of a crime.",[
+ ["fairly","Correct. Fairness is the main idea of due process."],
+ ["harshly","Harsh means very hard or mean. Due process is about being fair."],
+ ["quickly","Speed is not the goal. Fairness is."],
+ ["as if they are guilty","The accused is innocent until proven guilty."]],
+ "Look at the last sentence of the Due Process page.");
+Q("dp","Which is the best example of a fair and reasonable consequence?",[
+ ["A small fine for riding a bike on the sidewalk","Correct. This is the workbook's example of a reasonable consequence."],
+ ["Six months in jail for riding a bike on the sidewalk","The workbook says this is not reasonable. It is far too big."],
+ ["Losing the right to vote forever for a parking ticket","That is far too big a consequence for a small rule."],
+ ["Never being allowed to ride a bike again for one mistake","That is much too harsh for one small mistake."]],
+ "Pick the consequence that best matches a small mistake.");
+
+/* ===== AMENDMENT PROCESS ===== */
+Q("ap","What is an amendment?",[
+ ["A change to the Constitution","Correct. Amending means changing."],
+ ["A trial in a courtroom","Trials are part of due process, not amendments."],
+ ["A fee paid to vote","That is a poll tax."],
+ ["A law made by one state","States make their own laws. An amendment changes the U.S. Constitution."]],
+ "Your workbook says amending means ___.");
+Q("ap","What does 'ratify' mean?",[
+ ["To approve","Yes. Your workbook note says it well: ratify means to approve a change."],
+ ["To suggest","Suggesting is step 1, called proposing. Ratifying is step 2."],
+ ["To remove","Ratify does not mean remove."],
+ ["To vote for president","Ratify is about approving amendments, not electing a president."]],
+ "States do this in step 2, after Congress suggests the change.");
+Q("ap","In what year did the framers write the Constitution?",[
+ ["1787","Correct. The workbook starts with 'In 1787, the framers...'"],
+ ["1776","1776 is when the Declaration of Independence was signed. The Constitution came 11 years later."],
+ ["1870","1870 is the year of the 15th Amendment."],
+ ["1920","1920 is the year of the 19th Amendment."]],
+ "Look at the first sentence of the Amendment Process page.");
+Q("ap","Who were the framers?",[
+ ["The people who created the Constitution","Correct. The workbook says framers means creators."],
+ ["The first 50 governors","Governors lead states. They did not write the Constitution."],
+ ["People who build picture frames","Good guess on the word, but here 'framers' means the creators of the Constitution."],
+ ["The leaders of the Suffrage Movement","That group fought for women's right to vote, more than 100 years later."]],
+ "The word in parentheses after 'framers' tells you.");
+Q("ap","Why is the Constitution called a 'living document'?",[
+ ["It can be changed to meet the needs of the country","Correct. Like a living thing grows, the Constitution can change."],
+ ["It is alive like a plant","It is not really alive. 'Living' means it can change."],
+ ["It can never be changed","That is the opposite. A living document CAN be changed."],
+ ["The people who wrote it are still alive","The framers lived in the 1700s. 'Living' means it can change."]],
+ "Living things grow and ___.");
+Q("ap","In the most common amendment process, what is step 1?",[
+ ["Two-thirds of both houses of Congress propose the amendment","Correct. Congress suggests the amendment first."],
+ ["Three-fourths of the state legislatures ratify it","That is step 2."],
+ ["The president writes it alone","The president is not part of these two steps."],
+ ["One state changes it by itself","One state cannot change the Constitution."]],
+ "Look at the left box with the arrow on page 56.");
+Q("ap","In the most common amendment process, what is step 2?",[
+ ["Three-fourths of the state legislatures ratify it","Correct. The states approve it second."],
+ ["Two-thirds of Congress propose it","That is step 1."],
+ ["The Supreme Court votes on it","The Supreme Court is not part of these two steps."],
+ ["Every citizen votes on it","Citizens elect the lawmakers who vote. They don't vote on amendments directly."]],
+ "Look at the right box with the arrow on page 56.");
+Q("ap","How many states must ratify an amendment?",[
+ ["38 out of 50","Correct. That is three-fourths of the states."],
+ ["26 out of 50","That is just over half. The rule needs three-fourths."],
+ ["50 out of 50","Not every state is needed. Three-fourths is enough."],
+ ["10 out of 50","10 is far too few. The rule is three-fourths."]],
+ "Three-fourths of 50 states.");
+Q("ap","What fraction of Congress must propose an amendment?",[
+ ["Two-thirds","Correct. Two-thirds of BOTH houses of Congress."],
+ ["One-half","Just over half is not enough. It must be two-thirds."],
+ ["Three-fourths","Three-fourths is the number for the states, not Congress."],
+ ["All of Congress","Not everyone has to agree. Two-thirds is enough."]],
+ "Congress gets the fraction with a 3 on the bottom.");
+Q("ap","What fraction of state legislatures must ratify an amendment?",[
+ ["Three-fourths","Correct. Three-fourths, which is 38 of 50 states."],
+ ["Two-thirds","Two-thirds is the number for Congress."],
+ ["One-half","Half is not enough."],
+ ["One-third","One-third is far too few."]],
+ "The states get the fraction with a 4 on the bottom.");
+Q("ap","Congress has two houses. What are they?",[
+ ["The Senate and the House of Representatives","Correct. An amendment needs two-thirds of BOTH."],
+ ["The White House and the Supreme Court","The White House is where the president lives. The Supreme Court is the top court."],
+ ["The North and the South","Those are parts of the country, not houses of Congress."],
+ ["The state house and the courthouse","Those are buildings, not the two parts of Congress."]],
+ "One starts with S. The other starts with H.","x");
+Q("ap","In the amendment process, which happens first?",[
+ ["Congress proposes the amendment","Correct. Congress proposes, then the states ratify."],
+ ["The states ratify it","States can only approve an amendment after Congress proposes it."],
+ ["It becomes part of the Constitution","That happens last, after both steps."]],
+ "Follow the arrow on page 56 from left to right.");
+Q("ap","Why did the framers make the amendment process hard on purpose?",[
+ ["So one person or one group could not change the Constitution","Correct. That is the reason the workbook gives."],
+ ["So the Constitution could never change","They wanted change to be possible, just not easy."],
+ ["So only the president could change it","No single person can change it."],
+ ["Because they did not like amendments","They created the amendment process, so they wanted it to exist."]],
+ "The framers did not want ___ person or ___ group to be able to change it.");
+Q("ap","How does the amendment process protect citizens?",[
+ ["By making citizens a part of it","Correct. Citizens elect the members of Congress and state lawmakers who vote on amendments."],
+ ["By keeping citizens out of it","The workbook says the opposite."],
+ ["By letting one leader decide","The process stops one person from deciding."],
+ ["By making it very fast","It is slow and careful on purpose."]],
+ "Read the last sentence of the second paragraph on page 56.");
+Q("ap","How many amendments does the Constitution have?",[
+ ["27","Correct. There have been 27 amendments."],
+ ["10","10 is the Bill of Rights, the first ten amendments."],
+ ["50","50 is the number of states."],
+ ["100","There are far fewer. Remember, it's hard on purpose."]],
+ "It's a number in the 20s.");
+Q("ap","The Constitution has been amended 27 times in about how many years?",[
+ ["Nearly 240 years","Correct. That's about one amendment every 9 years."],
+ ["About 50 years","The Constitution is much older than 50 years. It is from 1787."],
+ ["About 1,000 years","The United States is not that old."],
+ ["About 10 years","The Constitution is much older than that."]],
+ "The Constitution was written in 1787.");
+Q("ap","Which of these was done by an amendment, according to your workbook?",[
+ ["Ending slavery","Correct. Ending slavery is on the workbook's list."],
+ ["Choosing the national bird","That was not done by an amendment."],
+ ["Building the White House","That was not done by an amendment."],
+ ["Naming the capital city","That was not done by an amendment."]],
+ "Look at the bullet list at the bottom of page 56.");
+Q("ap","Which of these is NOT on the workbook's list of things amendments have done?",[
+ ["Building the first railroad","Correct. Railroads were not built by amendments. The other three are on the list."],
+ ["Ending slavery","This IS on the list, so it is not the answer."],
+ ["Protecting our civil rights","This IS on the list, so it is not the answer."],
+ ["Giving more people the right to vote","This IS on the list, so it is not the answer."]],
+ "Three of these are on the list at the bottom of page 56.");
+Q("ap","Congress votes two-thirds in favor of an amendment. Then only 30 states ratify it. What happens?",[
+ ["It does not become an amendment, because 38 states are needed","Correct. 30 is not three-fourths of 50."],
+ ["It becomes an amendment, because most states said yes","30 is most of 50, but the rule is three-fourths, which is 38."],
+ ["Congress votes again and it passes","Congress can't skip the states. 38 states must ratify."],
+ ["The president decides","The president is not part of these steps."]],
+ "How many states are needed? Is 30 enough?");
+Q("ap","Only half of Congress votes for a new amendment. Can it move on to the states the usual way?",[
+ ["No. It needs two-thirds of both houses of Congress.","Correct. Half is not enough to propose an amendment."],
+ ["Yes. Half is enough.","Half is not enough. It must be two-thirds."],
+ ["Yes, if the president likes it","The president can't make up for missing votes."],
+ ["Yes, if 38 states want it","The usual way, the states only ratify after Congress proposes it with two-thirds."]],
+ "What fraction of Congress is needed?");
+Q("ap","The workbook says the amendment process is:",[
+ ["Easy to remember but hard to do in real life","Correct. Two steps are easy to remember. Getting that many votes is hard."],
+ ["Hard to remember and easy to do","It's the other way around."],
+ ["Easy to remember and easy to do","It's easy to remember, but hard to do on purpose."],
+ ["Done every single year","There have only been 27 in nearly 240 years."]],
+ "Read the first sentence of the second paragraph on page 56.");
+Q("ap","Can the president change the Constitution alone?",[
+ ["No. Congress and the states must take part.","Correct. No one person can change the Constitution."],
+ ["Yes. The president is in charge.","The president can't change the Constitution alone."],
+ ["Yes, if it is an emergency","Even in an emergency, the two steps are needed."],
+ ["Yes, if the governors agree","Governors are not part of these steps."]],
+ "The framers did not want one person to be able to change it.");
+Q("ap","What are the first ten amendments called?",[
+ ["The Bill of Rights","Right. The Bill of Rights is also where due process comes from, so your topics connect."],
+ ["The Declaration of Independence","That is a different document from 1776."],
+ ["The Voting Rights Amendments","Those are the 15th, 19th, 23rd, 24th, and 26th."],
+ ["The Framers' List","That is not a real name."]],
+ "Due process rights come from this list.","x");
+Q("ap","What is a state legislature?",[
+ ["The group of lawmakers for one state","Correct. Each state has its own lawmakers."],
+ ["The governor's house","The governor leads a state, but the legislature is a group of lawmakers."],
+ ["A court for one state","Courts hold trials. Legislatures make laws."],
+ ["The U.S. Congress","Congress makes laws for the whole country. A state legislature makes laws for one state."]],
+ "'Legis' means law. These people make laws for a state.","x");
+Q("ap","Why is 38 the number of states needed to ratify?",[
+ ["Three-fourths of 50 is 37.5, so it rounds up to 38","Correct. You can't have half a state, so 38 is needed."],
+ ["Two-thirds of 50 is 38","Two-thirds of 50 is about 33. The rule for states is three-fourths."],
+ ["38 is half of 50","Half of 50 is 25."],
+ ["There were 38 framers","The number comes from three-fourths of 50."]],
+ "Split 50 into 4 equal parts. Then take 3 of those parts.");
+Q("ap","Why did the framers create an amendment process?",[
+ ["They knew the government would need to be changed over the years","Correct. They planned ahead so changes could be made."],
+ ["They wanted to rewrite it every week","Changes are rare. It's hard on purpose."],
+ ["They thought it was perfect and could never need changes","They knew it would need changes, so they planned for it."],
+ ["The king of England asked them to","The U.S. was free from the king by then."]],
+ "Read the first sentence on page 56.");
+Q("ap","Which word means the same as 'amending'?",[
+ ["Changing","Correct. The workbook says amending (changing)."],
+ ["Voting","Voting is how people choose leaders."],
+ ["Arresting","Arresting is when police take someone in."],
+ ["Ratifying","Ratifying means approving. Amending means changing."]],
+ "Look for the word in parentheses after 'amending' on page 56.");
+
+/* ===== VOTING RIGHTS: facts ===== */
+Q("vr","The 15th Amendment was passed after which war?",[
+ ["The Civil War","Correct. It passed in 1870, after the Civil War ended."],
+ ["The Revolutionary War","That war was fought to be free from Britain, in the 1770s and 1780s."],
+ ["World War I","That war ended in 1918, close to the time of the 19th Amendment."],
+ ["The Vietnam War","The Vietnam War is linked to the draft and the 26th Amendment."]],
+ "This war ended slavery.");
+Q("vr","After the 15th Amendment, how did some states make it hard for African Americans to vote?",[
+ ["Poll taxes and literacy tests","Correct. The workbook names both of these."],
+ ["They lowered the voting age","Lowering the voting age let MORE people vote. That was the 26th Amendment."],
+ ["They gave everyone free rides to the polls","That would help people vote, not stop them."],
+ ["They added more places to vote","That would also help people vote."]],
+ "One cost money. The other was a test.");
+Q("vr","What was a literacy test?",[
+ ["A reading and writing test some states used to keep people from voting","Correct. These tests were unfair and were used to block African American voters."],
+ ["A test to become a teacher","That is not what it was."],
+ ["A math test for students","That is not what it was."],
+ ["A fee people paid to vote","That was a poll tax."]],
+ "'Literacy' means being able to read and write.","x");
+Q("vr","For how many years were women denied the right to vote in the United States?",[
+ ["144 years","Correct. From 1776 to 1920 is 144 years."],
+ ["27 years","27 is the number of amendments."],
+ ["50 years","Women waited much longer than that."],
+ ["240 years","Nearly 240 years is how old the Constitution is."]],
+ "1920 minus 1776.");
+Q("vr","Which movement fought for women's right to vote?",[
+ ["The Suffrage Movement","Correct. Their work led to the 19th Amendment in 1920."],
+ ["The Civil War","The Civil War was a war, not a movement for women's votes."],
+ ["The Draft","The draft forced men to join the military."],
+ ["The Framers","The framers wrote the Constitution in 1787."]],
+ "Look at the 19th Amendment paragraph on page 58.");
+Q("vr","What does 'suffrage' mean?",[
+ ["The right to vote","Correct. The Suffrage Movement fought for women's right to vote."],
+ ["Suffering","The words sound alike, but suffrage means the right to vote."],
+ ["A kind of tax","That is not what suffrage means."],
+ ["A type of trial","That is not what suffrage means."]],
+ "Think about what the Suffrage Movement wanted for women.","x");
+Q("vr","After the 19th Amendment, which women still had to pay poll taxes or pass literacy tests in some states?",[
+ ["African American women","Correct. The workbook says many African American women still faced these unfair rules."],
+ ["Women in Washington, D.C.","The workbook names a different group."],
+ ["Women over age 21","The workbook names a different group."],
+ ["No women had to","The workbook says some women still did."]],
+ "Read the end of the 19th Amendment paragraph on page 58.");
+Q("vr","Before the 23rd Amendment, what could people living in Washington, D.C. NOT do?",[
+ ["Have a voice in electing the president","Correct. They had no voice in the election of the president."],
+ ["Go to school","They could go to school."],
+ ["Own a car","That had nothing to do with it."],
+ ["Pay taxes","They did pay taxes."]],
+ "Read the 23rd Amendment paragraph on page 58.");
+Q("vr","The 23rd Amendment gave Washington, D.C. representatives in what?",[
+ ["The Electoral College","Correct. That gave D.C. a voice in choosing the president."],
+ ["The Supreme Court","The Supreme Court is the top court. It is not part of this amendment."],
+ ["The Suffrage Movement","That was a movement for women's votes."],
+ ["The Bill of Rights","The Bill of Rights is the first ten amendments."]],
+ "It has the word 'College' in it.");
+Q("vr","What is the Electoral College?",[
+ ["The group that officially chooses the president, based on each state's votes","Correct. It isn't a school. 'College' here means a group."],
+ ["A school for voters","It's not a school. 'College' here means a group."],
+ ["The building where Congress meets","That building is the Capitol."],
+ ["A test you take before voting","That sounds like a literacy test, which is now illegal."]],
+ "In this name, 'college' means a group of people.","x");
+Q("vr","What was a poll tax?",[
+ ["A fee some states made citizens pay in order to vote","Correct. That is how the workbook defines it."],
+ ["A reading and writing test","That was a literacy test."],
+ ["Money paid TO people who vote","It worked the other way. Voters had to pay."],
+ ["A survey asking people's opinions","That is an opinion poll. A poll tax was a fee to vote."]],
+ "'Tax' means money you have to pay.");
+Q("vr","Poll taxes were first created to keep which people from voting?",[
+ ["Low income citizens and African Americans","Correct. That is what the workbook says."],
+ ["People in Washington, D.C.","D.C. is the 23rd Amendment story."],
+ ["18-year-olds","Age is the 26th Amendment story."],
+ ["Members of Congress","That's not who poll taxes targeted."]],
+ "Who would have the hardest time paying a fee?");
+Q("vr","Why was the 26th Amendment passed?",[
+ ["Men as young as 18 could be drafted but could not vote","Correct. People said it was unfair to go to war without being allowed to vote."],
+ ["Women could not vote","That was fixed by the 19th Amendment."],
+ ["People had to pay poll taxes","That was fixed by the 24th Amendment."],
+ ["D.C. had no voice in choosing the president","That was fixed by the 23rd Amendment."]],
+ "Think about the word 'drafted.'");
+Q("vr","In the 26th Amendment reading, what does 'drafted' mean?",[
+ ["Forced to join the military","Correct. That is the meaning in your workbook."],
+ ["Wrote a first copy of something","That is another meaning of 'draft,' but here it means forced to join the military."],
+ ["Picked for a sports team","Sports teams do have drafts, but in this lesson it means the military."],
+ ["Allowed to vote","Being drafted is not the same as being allowed to vote."]],
+ "Look at the words in parentheses on page 58.");
+Q("vr","After the 26th Amendment, what was true about the voting age and the draft age?",[
+ ["Both were 18","Correct. They matched at 18."],
+ ["Voting was 21 and the draft was 18","That was the problem BEFORE the 26th Amendment."],
+ ["Both were 21","The voting age went down to 18, not the other way."],
+ ["Voting was 16 and the draft was 18","The voting age is 18, not 16."]],
+ "Read the last sentence on page 58.");
+Q("vr","Which list puts the voting amendments in order from oldest to newest?",[
+ ["15th, 19th, 23rd, 24th, 26th","Correct. 1870, 1920, 1961, 1964, 1971. The numbers go up as time goes on."],
+ ["19th, 15th, 24th, 23rd, 26th","The 15th (1870) came before the 19th (1920)."],
+ ["26th, 24th, 23rd, 19th, 15th","This is newest to oldest. It's backwards."],
+ ["15th, 23rd, 19th, 26th, 24th","The 19th (1920) came before the 23rd (1961)."]],
+ "Amendment numbers go up over time.");
+Q("vr","How many years passed between the 15th Amendment (1870) and the 19th Amendment (1920)?",[
+ ["50 years","Correct. 1920 minus 1870 is 50."],
+ ["40 years","Check your subtraction: 1920 minus 1870."],
+ ["60 years","Check your subtraction: 1920 minus 1870."],
+ ["144 years","144 is how long women waited for the vote."]],
+ "1920 minus 1870.");
+Q("vr","The 26th Amendment lowered the voting age from ___ to ___.",[
+ ["21 to 18","Correct. The voting age went from 21 down to 18."],
+ ["18 to 16","The voting age is 18, not 16."],
+ ["25 to 21","Before the 26th Amendment, the age was 21, not 25."],
+ ["18 to 21","That would raise it. The 26th Amendment lowered it."]],
+ "The new voting age matched the draft age.");
+Q("vr","How many years after the 23rd Amendment (1961) was the 24th Amendment ratified?",[
+ ["3 years","Correct. 1964 minus 1961 is 3."],
+ ["1 year","Check your subtraction: 1964 minus 1961."],
+ ["5 years","Check your subtraction: 1964 minus 1961."],
+ ["10 years","Check your subtraction: 1964 minus 1961."]],
+ "The 24th Amendment came in 1964.");
+Q("vr","Which two amendments both helped African Americans vote?",[
+ ["The 15th and the 24th","Right. The 15th gave African American men the vote. The 24th ended poll taxes, which were used to keep African Americans from voting."],
+ ["The 19th and the 26th","The 19th was for women and the 26th was about age."],
+ ["The 23rd and the 26th","The 23rd was for D.C. and the 26th was about age."],
+ ["The 19th and the 23rd","The 19th was for women and the 23rd was for D.C."]],
+ "One gave the vote after the Civil War. The other got rid of a fee.");
+Q("vr","Which amendment most helped people who could not afford to pay to vote?",[
+ ["The 24th Amendment","Correct. It got rid of poll taxes, so no one has to pay to vote."],
+ ["The 19th Amendment","The 19th gave women the vote. It did not end poll taxes."],
+ ["The 23rd Amendment","The 23rd gave D.C. a voice for president."],
+ ["The 26th Amendment","The 26th lowered the voting age."]],
+ "Which amendment is about money?");
+
+/* ===== VOTING RIGHTS: generated from the organizer ===== */
+const ORD = {15:"15th",19:"19th",23:"23rd",24:"24th",26:"26th"};
+const KEYS = [15,19,23,24,26];
+const AM = {
+ 15:{y:1870, did:"gave African American men, including formerly enslaved men, the right to vote",
+     yh:"This one came right after the Civil War ended in 1865.", ch:"Think about who could vote after the Civil War."},
+ 19:{y:1920, did:"gave all women the right to vote",
+     yh:"Memory trick: the 19th Amendment came in 19-20.", ch:"Picture the 'Votes for Women' sign on page 58."},
+ 23:{y:1961, did:"gave people living in Washington, D.C. a voice in electing the president",
+     yh:"This one came in the early 1960s, just before the 24th.", ch:"This one is about a city that is not part of any state."},
+ 24:{y:1964, did:"got rid of poll taxes, the fees some states charged to vote",
+     yh:"This one came in the 1960s, three years after the 23rd.", ch:"This one is about money."},
+ 26:{y:1971, did:"lowered the voting age from 21 to 18",
+     yh:"This is the newest one on your list. It came in the 1970s.", ch:"This one is about age."}
+};
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+KEYS.forEach(n=>{
+  const a = AM[n], others = KEYS.filter(k=>k!==n);
+  Q("vr",`In what year was the ${ORD[n]} Amendment passed?`,
+    [[String(a.y),`Correct. The ${ORD[n]} Amendment passed in ${a.y}. It ${a.did}.`]]
+      .concat(others.slice(0).sort(()=>Math.random()-.5).slice(0,3).map(m=>[String(AM[m].y),`${AM[m].y} is the year of the ${ORD[m]} Amendment, which ${AM[m].did}.`])),
+    a.yh,"vo",null,"y"+n);
+  Q("vr",`Which amendment was passed in ${a.y}?`,
+    [[`The ${ORD[n]} Amendment`,`Correct. The ${ORD[n]} Amendment passed in ${a.y}. It ${a.did}.`]]
+      .concat(others.map(m=>[`The ${ORD[m]} Amendment`,`The ${ORD[m]} Amendment passed in ${AM[m].y}, not ${a.y}.`])),
+    a.yh,"vo",null,"yr"+n);
+  Q("vr",`What did the ${ORD[n]} Amendment change?`,
+    [[cap(a.did),`Correct. The ${ORD[n]} Amendment (${a.y}) ${a.did}.`]]
+      .concat(others.slice(0).sort(()=>Math.random()-.5).slice(0,3).map(m=>[cap(AM[m].did),`That was the ${ORD[m]} Amendment (${AM[m].y}).`])),
+    a.ch,"vo",null,"c"+n);
+  Q("vr",`Which amendment ${a.did}?`,
+    [[`The ${ORD[n]} Amendment`,`Correct. The ${ORD[n]} Amendment (${a.y}) ${a.did}.`]]
+      .concat(others.map(m=>[`The ${ORD[m]} Amendment`,`The ${ORD[m]} Amendment ${AM[m].did}.`])),
+    a.ch,"vo",null,"w"+n);
+});
+
+/* ===== VOTING RIGHTS: story cards (p. 61, scrambled on purpose) ===== */
+function S(id, story, n, why, hint){
+  const others = KEYS.filter(k=>k!==n);
+  Q("vr","Which amendment helps the person in this story?",
+    [[`The ${ORD[n]} Amendment`, why]].concat(others.map(m=>[`The ${ORD[m]} Amendment`,`The ${ORD[m]} Amendment ${AM[m].did}. That is not the clue in this story.`])),
+    hint,"cards",story,id);
+}
+S("s-linda","Linda is allowed to vote for the President of the United States while living in Washington, D.C. for the first time in 1964.",23,
+  "Correct. Linda lives in Washington, D.C. The 23rd Amendment (1961) gave D.C. residents a voice in choosing the president, and 1964 was the first presidential election after it.","Where does Linda live?");
+S("s-ken","Ken is struggling to pay his bills. He is thankful that when he votes in the next election, he doesn't have to pay a poll tax.",24,
+  "Correct. The 24th Amendment (1964) got rid of poll taxes. Ken can vote even when money is tight.","What is Ken glad he doesn't have to pay?");
+S("s-derek","Derek is a Black man going to vote in the election this November. He is excited to choose his representative!",15,
+  "Correct. The 15th Amendment (1870) gave African American men the right to vote.","Derek is a Black man. Which amendment first gave African American men the vote?");
+S("s-dc96","A citizen of Washington, D.C. is excited because the candidate she voted for just won the Presidential election of 1996.",23,
+  "Correct. She lives in D.C. and voted for president. The 23rd Amendment (1961) made that possible.","Where does she live, and what kind of election is it?");
+S("s-sienna","Sienna stands in line at her polling place to vote in the election. She is happy that she can voice her opinion!",19,
+  "Correct. Sienna is a woman who is voting. The 19th Amendment (1920) gave women the right to vote.","Sienna is a woman. Which amendment is about women?");
+S("s-james","James is a formerly enslaved person who can now vote in the election of 1872. He is excited to make his opinion heard through voting for the first time.",15,
+  "Correct. The 15th Amendment (1870) gave formerly enslaved men the right to vote. 1872 was just two years later.","Look at the year and the words 'formerly enslaved.'");
+S("s-damian","Damian just turned 18 years old in May. He can't wait to cast his vote for the first time in the election this year.",26,
+  "Correct. The 26th Amendment (1971) lowered the voting age to 18, so Damian can vote.","How old is Damian?");
+S("s-robert","Robert goes to vote in the 2012 election and when he gets to the front of the line, no one asks him to pay a tax.",24,
+  "Correct. The 24th Amendment (1964) ended poll taxes, so no one asks Robert to pay.","What does no one ask Robert to pay?");
+S("s-elizabeth","Elizabeth goes to the polls to vote for the first time in 1920. She can't wait to mark her ballot since she's been fighting for suffrage for years.",19,
+  "Correct. The 19th Amendment passed in 1920 and gave women the right to vote. Elizabeth was part of the fight for suffrage.","Look at the year 1920 and the word 'suffrage.'");
+S("s-frank","Frank is an African American man who wants to vote in 1870. When he arrives at the polls, he casts his ballot for his chosen candidate.",15,
+  "Correct. The 15th Amendment passed in 1870 and gave African American men the right to vote.","Look at the year and who Frank is.");
+S("s-marissa","Marissa goes to the polls to vote in the 2020 election. She is a woman and she is glad she can vote to make her voice heard.",19,
+  "Correct. Marissa is a woman. The 19th Amendment (1920) gave women the right to vote.","What does the story tell you about Marissa?");
+S("s-larry","Larry is 19. He could not vote last year because he had to be 21. This year, a new law has passed that allows him to vote at 19.",26,
+  "Correct. The 26th Amendment lowered the voting age from 21 to 18, so Larry can now vote at 19.","The story is about age. Which amendment changed the voting age?");
+S("s-loretta","Loretta stands in line at her polling place in Washington, D.C. to vote in the Presidential election of 1976.",23,
+  "Correct. Loretta votes for president from D.C. The 23rd Amendment (1961) gave D.C. that voice.","Where does Loretta live?");
+S("s-maria","Maria just had to pay a big bill to her dog's veterinarian. She is glad there isn't a tax required to vote!",24,
+  "Correct. The 24th Amendment ended poll taxes, so Maria doesn't have to pay to vote.","What is Maria glad she doesn't have to pay?");
+S("s-twenty","A 20 year old citizen goes to vote in 1988 for his chosen candidate. He can't wait to see the results.",26,
+  "Correct. Before 1971 you had to be 21. The 26th Amendment lowered the age to 18, so a 20-year-old can vote in 1988.","He is 20. Could a 20-year-old vote before 1971?");
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+const BYID = Object.fromEntries(BANK.map(q=>[q.id,q]));
+const LET = "ABCDE";
+const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- Saved progress (this browser only) ---------- */
+const STORE = "rights-quiz-v1";
+function load(){try{return JSON.parse(localStorage.getItem(STORE))||{};}catch(e){return {};}}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(saved));}catch(e){}}
+const saved = load();
+saved.missed = Array.isArray(saved.missed) ? saved.missed.filter(id=>BYID[id]) : [];
+
+/* ---------- Home ---------- */
+let roundSize = "20";
+["dp","ap","vr"].forEach(t=>{$("n-"+t).textContent = BANK.filter(q=>q.t===t).length;});
+$("nameInput").value = saved.name || "";
+$("nameInput").addEventListener("input",e=>{saved.name = e.target.value.trim().slice(0,30); save();});
+$("sizeSeg").addEventListener("click",e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  roundSize = b.dataset.n;
+  [...$("sizeSeg").children].forEach(x=>x.setAttribute("aria-pressed", x===b ? "true":"false"));
+});
+function refreshMissedBtn(){
+  const n = saved.missed.length;
+  $("missedBtn").hidden = n===0;
+  $("missedBtn").textContent = `Practice my missed questions (${n})`;
+}
+refreshMissedBtn();
+$("startBtn").addEventListener("click",()=>{
+  const topics = ["dp","ap","vr"].filter(t=>$("t-"+t).checked);
+  $("topicWarn").hidden = topics.length>0;
+  if(!topics.length) return;
+  let pool = shuffle(BANK.filter(q=>topics.includes(q.t)));
+  if(roundSize!=="all") pool = pool.slice(0, Number(roundSize));
+  startRound(pool.map(q=>q.id));
+});
+$("missedBtn").addEventListener("click",()=>startRound(shuffle(saved.missed)));
+
+function show(which){
+  ["home","quiz","end"].forEach(s=>{ $(s).hidden = s!==which; $(s).style.display = s===which ? "flex" : "none"; });
+  window.scrollTo({top:0});
+}
+
+/* ---------- Quiz ---------- */
+let st = null;
+function prep(id, retry){
+  const q = BYID[id];
+  return {...q, opts: shuffle(q.opts), retry: !!retry};
+}
+function startRound(ids){
+  if(!ids.length) return;
+  st = {queue: ids.map(id=>prep(id,false)), i:0, pts:0, streak:0, results:[], lastIds: ids.slice()};
+  show("quiz");
+  renderQ();
+}
+function renderQ(){
+  const q = st.queue[st.i];
+  st.cur = q; st.tries = 0; st.picked = []; st.done = false;
+  $("qCount").textContent = `Question ${st.i+1} of ${st.queue.length}`;
+  $("progBar").style.width = (st.i/st.queue.length*100)+"%";
+  $("sPts").textContent = fmt(st.pts);
+  $("sStreak").textContent = st.streak;
+  $("qTag").dataset.t = q.t; $("qTag").textContent = TOPIC[q.t];
+  $("qAgain").hidden = !q.retry;
+  $("qSrc").textContent = SRC[q.src] || "";
+  $("qSrc").classList.toggle("x", q.src==="x");
+  $("qStory").hidden = !q.story; $("qStoryText").textContent = q.story || "";
+  $("qStem").textContent = q.q;
+  const box = $("qOpts"); box.innerHTML = "";
+  q.opts.forEach((o,i)=>{
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.id = "opt"+i;
+    b.innerHTML = `<span class="letter">${LET[i]}</span><span class="otext"></span><span class="mark" aria-hidden="true"></span>`;
+    b.querySelector(".otext").textContent = o.x;
+    b.addEventListener("click",()=>choose(i));
+    box.appendChild(b);
+  });
+  $("fb").innerHTML = ""; $("nextBtn").hidden = true;
+  if("speechSynthesis" in window) try{speechSynthesis.cancel();}catch(e){}
+}
+function fmt(n){return Number.isInteger(n) ? String(n) : n.toFixed(1);}
+const ICON = {
+  ok:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  no:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  bulb:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>'
+};
+const markOk = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--good)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const markNo = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--bad)" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+function nm(){return saved.name ? `, ${saved.name}` : "";}
+const PRAISE1 = ["Great job","You got it","Nice work","Your studying is paying off","Exactly right","Way to go","Smart thinking","You remembered it"];
+const PRAISE2 = ["You figured it out","Nice comeback","Great job using the hint","You kept trying, and it worked"];
+const MISS = ["Good effort. Let's learn this one.","That's a tricky one. Here's how it works.","Nice try. Now you'll know it for the test."];
+
+function choose(i){
+  if(!st || st.done || st.picked.includes(i)) return;
+  const q = st.cur, o = q.opts[i];
+  st.picked.push(i); st.tries++;
+  if(o.ok){ resolve(st.tries===1 ? 1 : 2); return; }
+  const b = $("opt"+i); b.classList.add("wrong"); b.disabled = true; b.querySelector(".mark").innerHTML = markNo;
+  if(st.tries===1){
+    $("fb").innerHTML = `<div class="fb try"><div class="fbhead"><span class="fbicon">${ICON.bulb}</span><h3>Not quite. You have one more try.</h3></div><p><span class="k">Hint:</span> ${esc(q.hint)}</p></div>`;
+    $("fb").scrollIntoView({block:"nearest",behavior:reduceMotion?"auto":"smooth"});
+  } else {
+    resolve(0);
+  }
+}
+function resolve(outcome){
+  const q = st.cur; st.done = true;
+  const correctIdx = q.opts.findIndex(o=>o.ok);
+  q.opts.forEach((o,i)=>{
+    const b = $("opt"+i); b.disabled = true;
+    if(i===correctIdx){ b.classList.add("right"); b.querySelector(".mark").innerHTML = markOk; }
+    else if(!st.picked.includes(i)) b.classList.add("dim");
+  });
+  if(!q.retry){
+    st.results.push({id:q.id, t:q.t, outcome});
+    st.pts += outcome===1 ? 1 : outcome===2 ? 0.5 : 0;
+  }
+  st.streak = outcome===1 ? st.streak+1 : 0;
+  $("sPts").textContent = fmt(st.pts); $("sStreak").textContent = st.streak;
+
+  const right = q.opts[correctIdx];
+  const wrongs = q.opts.filter(o=>!o.ok);
+  const li = o => `<li><span class="ans">${esc(o.x)}${st.picked.includes(q.opts.indexOf(o)) ? '<span class="yours">Your answer</span>' : ''}</span>${esc(o.why)}</li>`;
+  let html;
+  if(outcome===1){
+    html = `<div class="fb good"><div class="fbhead"><span class="fbicon">${ICON.ok}</span><h3>${esc(pick(PRAISE1)+nm())}!</h3></div>
+      <p><span class="k">Why it's right:</span> ${esc(right.why)}</p>
+      <details><summary>See why the other answers are wrong</summary><ul class="whylist">${wrongs.map(li).join("")}</ul></details></div>`;
+    burst(70);
+    if(saved.missed.includes(q.id)){ saved.missed = saved.missed.filter(x=>x!==q.id); save(); }
+  } else if(outcome===2){
+    const first = q.opts[st.picked[0]];
+    html = `<div class="fb good"><div class="fbhead"><span class="fbicon">${ICON.ok}</span><h3>${esc(pick(PRAISE2)+nm())}!</h3></div>
+      <p><span class="k">Why it's right:</span> ${esc(right.why)}</p>
+      <p><span class="k">Why "${esc(first.x)}" was wrong:</span> ${esc(first.why)}</p></div>`;
+    burst(35);
+  } else {
+    html = `<div class="fb miss"><div class="fbhead"><span class="fbicon">${ICON.no}</span><h3>${esc(pick(MISS))}</h3></div>
+      <p><span class="k">The correct answer is:</span> ${esc(right.x)}</p>
+      <p><span class="k">Why it's right:</span> ${esc(right.why)}</p>
+      <p class="k">Why the other answers are wrong:</p>
+      <ul class="whylist">${wrongs.map(li).join("")}</ul>
+      ${q.retry ? "" : "<p>This question will come back at the end of the round for practice.</p>"}</div>`;
+    if(!q.retry){
+      st.queue.push(prep(q.id,true));
+      if(!saved.missed.includes(q.id)){ saved.missed.push(q.id); save(); }
+    }
+  }
+  $("fb").innerHTML = html;
+  const last = st.i >= st.queue.length-1;
+  $("nextBtn").textContent = last ? "See my score" : "Next question";
+  $("nextBtn").hidden = false;
+  $("progBar").style.width = ((st.i+1)/st.queue.length*100)+"%";
+  $("qCount").textContent = `Question ${st.i+1} of ${st.queue.length}`;
+  $("fb").scrollIntoView({block:"nearest",behavior:reduceMotion?"auto":"smooth"});
+}
+function next(){
+  if(!st || !st.done) return;
+  if(st.i >= st.queue.length-1){ finish(); return; }
+  st.i++; renderQ();
+  $("qStem").scrollIntoView({block:"nearest"});
+}
+$("nextBtn").addEventListener("click",next);
+$("quitBtn").addEventListener("click",finish);
+
+document.addEventListener("keydown",e=>{
+  if($("quiz").hidden || e.target.tagName==="INPUT") return;
+  if(/^[1-5]$/.test(e.key)){ const i = Number(e.key)-1; if(st && st.cur && i < st.cur.opts.length){ choose(i); e.preventDefault(); } }
+  else if(e.key==="Enter" && st && st.done && document.activeElement && !document.activeElement.classList.contains("btn")){ next(); e.preventDefault(); }
+});
+
+/* Read aloud */
+if("speechSynthesis" in window && "SpeechSynthesisUtterance" in window){
+  $("speakBtn").hidden = false;
+  $("speakBtn").addEventListener("click",()=>{
+    try{
+      const q = st.cur;
+      const text = (q.story ? q.story + ". " : "") + q.q + ". " + q.opts.map((o,i)=>`${LET[i]}. ${o.x}.`).join(" ");
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.rate = 0.92;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  });
+}
+
+/* ---------- Results ---------- */
+function finish(){
+  if("speechSynthesis" in window) try{speechSynthesis.cancel();}catch(e){}
+  const r = st.results, n = r.length;
+  const first = r.filter(x=>x.outcome===1).length, second = r.filter(x=>x.outcome===2).length, miss = r.filter(x=>x.outcome===0).length;
+  const pct = n ? Math.round(st.pts/n*100) : 0;
+  $("endScore").textContent = `${fmt(st.pts)} / ${n}`;
+  $("endSub").textContent = n ? `That's ${pct}% of the points.` : "You didn't answer any questions this round.";
+  $("endHead").textContent = !n ? "Round ended" : pct>=90 ? `Outstanding work${nm()}!` : pct>=75 ? `Great job${nm()}!` : pct>=50 ? `Good effort${nm()}. Keep practicing!` : `Keep going${nm()}. Every round helps you learn.`;
+  $("cFirst").textContent = first; $("cSecond").textContent = second; $("cMiss").textContent = miss;
+  const rows = $("topicRows"); rows.innerHTML = "";
+  ["dp","ap","vr"].forEach(t=>{
+    const tr = r.filter(x=>x.t===t); if(!tr.length) return;
+    const p = tr.reduce((s,x)=>s+(x.outcome===1?1:x.outcome===2?.5:0),0);
+    const tp = Math.round(p/tr.length*100);
+    const d = document.createElement("div"); d.className = "trow"; d.dataset.t = t;
+    d.innerHTML = `<span>${TOPIC[t]}</span><div class="bar"><span style="width:${tp}%"></span></div><span class="pct">${tp}%</span>`;
+    rows.appendChild(d);
+  });
+  const missedIds = r.filter(x=>x.outcome!==1).map(x=>x.id);
+  const list = $("missedList"); list.innerHTML = "";
+  missedIds.forEach(id=>{
+    const q = BYID[id], right = q.opts.find(o=>o.ok);
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="tag" data-t="${q.t}" style="align-self:flex-start">${TOPIC[q.t]}</span>${q.story ? `<span class="sub">${esc(q.story)}</span>` : ""}<span>${esc(q.q)}</span><span class="a">Answer: ${esc(right.x)}</span>`;
+    list.appendChild(li);
+  });
+  $("missedPanel").hidden = missedIds.length===0;
+  $("redoBtn").hidden = missedIds.length===0;
+  $("redoBtn").onclick = ()=>startRound(shuffle(missedIds));
+  refreshMissedBtn();
+  show("end");
+  if(n && pct>=75) burst(120);
+}
+$("againBtn").addEventListener("click",()=>$("startBtn").click());
+$("homeBtn").addEventListener("click",()=>{refreshMissedBtn(); show("home");});
+
+/* ---------- Confetti ---------- */
+const cv = $("confetti"), cx = cv.getContext("2d");
+let parts = [], raf = 0;
+function burst(count){
+  if(reduceMotion) return;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = innerWidth*dpr; cv.height = innerHeight*dpr; cx.setTransform(dpr,0,0,dpr,0,0);
+  const cs = getComputedStyle(document.documentElement);
+  const cols = ["--gold","--primary","--t-dp","--t-ap","--good"].map(v=>cs.getPropertyValue(v).trim()||"#F2B42A");
+  for(let k=0;k<count;k++){
+    const ang = -Math.PI/2 + (Math.random()-.5)*1.6, sp = 6+Math.random()*7;
+    parts.push({x:innerWidth/2, y:innerHeight*0.55, vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp, r:Math.random()*6.28, vr:(Math.random()-.5)*.3, w:6+Math.random()*6, h:4+Math.random()*4, c:pick(cols), life:0});
+  }
+  if(!raf) raf = requestAnimationFrame(tick);
+}
+function tick(){
+  cx.clearRect(0,0,innerWidth,innerHeight);
+  parts.forEach(p=>{ p.vy += .25; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life++;
+    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.globalAlpha = Math.max(0,1-p.life/110); cx.fillRect(-p.w/2,-p.h/2,p.w,p.h); cx.restore(); });
+  parts = parts.filter(p=>p.life<110 && p.y<innerHeight+40);
+  raf = parts.length ? requestAnimationFrame(tick) : (cx.clearRect(0,0,innerWidth,innerHeight), 0);
+}
+
+show("home");
+</script>
